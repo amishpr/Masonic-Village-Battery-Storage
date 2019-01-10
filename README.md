@@ -1,4 +1,4 @@
-# Programming of Power Electronics Converters using Texas Instrument Microcontrollers
+# Masonic Village Battery Storage Project
 
 ## Team Name
 
