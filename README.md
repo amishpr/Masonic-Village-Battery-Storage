@@ -6,15 +6,23 @@ Turing-Compete
 
 ## Team Members
 
-Stephen Pinto (sap5669@psu.edu)
+Stephen Pinto (sap5669@psu.edu) (Computer Science)
 
-Amish Prajapati (amish@psu.edu)
+Amish Prajapati (amish@psu.edu) (Computer Science)
+
+Samuel Zionts-Bernstein (svz5129@psu.edu) (Electrical Engineering)
+
+Jarod Daws (jaroddaws@psu.edu) (Electrical Engineering)
 
 ## Description Of Roles
 
 Stephen Pinto - Develop control algorithms in a Texas Instrument chip to control Voltage/Current/Power of power electronics modules used in renewable energy sources
 
 Amish Prajapati - Develop control algorithms in a Texas Instrument chip to control Voltage/Current/Power of power electronics modules used in renewable energy sources
+
+Samuel Zionts-Bernstein - Design circuit 
+
+Jarod Daws - Design circuit
 
 ## Project Advisor
 
