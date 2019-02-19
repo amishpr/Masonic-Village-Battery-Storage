@@ -6,6 +6,18 @@
 #include "F2806x_Examples.h"   	// F2806x Examples Include File
 #include <stdio.h>
 
+
+// Macro to label code as debug code.
+// Example: D(prinf("Line Reached!"));
+// Remove the DEBUG variable to remove these statements from the code.
+#define DEBUG
+#ifdef DEBUG
+#define D(x) x
+#else
+#define D(x)
+#endif
+
+
 void DoBootSequence(void);
 void ConfigureADC(void);
 __interrupt void cpu_timer0_isr(void);

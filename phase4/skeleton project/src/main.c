@@ -3,6 +3,9 @@
 void
 DoBootSequence()
 {
+    // Adjust console buffering to flush when newline is output.
+    D(setvbuf(stdout, NULL, _IOLBF, 0));
+
     //
     // Initialize System Control:
     // PLL, WatchDog, enable Peripheral Clocks
@@ -184,7 +187,7 @@ cpu_timer0_isr(void)
 
     // Blink LED just to verify that the interupts are occuring.
     GpioDataRegs.GPBTOGGLE.bit.GPIO34 = 1;
-    printf("Temp: %u\n", AdcResult.ADCRESULT0);
+    D(printf("Temp: %u\n", AdcResult.ADCRESULT0));
     AdcRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
 
     // Acknowledge this interrupt to receive more interrupts from group 1
