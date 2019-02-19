@@ -74,48 +74,30 @@ ConfigureADC(void)
     AdcRegs.INTSEL1N2.bit.INT1E     = 1;    // Enabled ADCINT1
     AdcRegs.INTSEL1N2.bit.INT1CONT  = 0;    // Disable ADCINT1 Continuous mode
 
-    //
     // setup EOC0 to trigger ADCINT1 to fire
-    //
     AdcRegs.INTSEL1N2.bit.INT1SEL   = 0;
 
-    //
     // set SOC0 channel select to ADCINA5
     // (which is internally connected to the temperature sensor)
-    //
     AdcRegs.ADCSOC0CTL.bit.CHSEL    = 5;
 
     AdcRegs.ADCSOC0CTL.bit.TRIGSEL  = 5;    // set SOC0 start trigger on EPWM1A
 
-    //
     // set SOC0 S/H Window to 26 ADC Clock Cycles, (25 ACQPS plus 1)
-    //
     AdcRegs.ADCSOC0CTL.bit.ACQPS    = 25;
     EDIS;
 
-    //
-    // Step 7. User specific code, enable interrupts:
-    //
 
-    //
     // Enable ADCINT1 in PIE
-    //
     PieCtrlRegs.PIEIER1.bit.INTx1 = 1; // Enable INT 1.1 in the PIE
     IER |= M_INT1;                     // Enable CPU Interrupt 1
     EINT;                              // Enable Global interrupt INTM
     ERTM;                              // Enable Global realtime interrupt DBGM
 
-    LoopCount = 0;
-    ConversionCount = 0;
-
-    //
     // Assumes ePWM1 clock is already enabled in InitSysCtrl();
-    //
     EPwm1Regs.ETSEL.bit.SOCAEN  = 1;        // Enable SOC on A group
 
-    //
     // Select SOC from from CPMA on upcount
-    //
     EPwm1Regs.ETSEL.bit.SOCASEL = 4;
 
     EPwm1Regs.ETPS.bit.SOCAPRD  = 1;        // Generate pulse on 1st event
@@ -146,7 +128,7 @@ main(void)
     // Configure CPU-Timer 0 to interrupt every 500 milliseconds:
     // 80MHz CPU Freq, 50 millisecond Period (in uSeconds)
     //
-    ConfigCpuTimer(&CpuTimer0, 80, 500000);
+    ConfigCpuTimer(&CpuTimer0, 80, 3000000);
 
     //
     // To ensure precise timing, use write-only instructions to write to the
@@ -200,16 +182,12 @@ cpu_timer0_isr(void)
 {
     CpuTimer0.InterruptCount++;
 
-    //
-    // Toggle GPIO34 once per 500 milliseconds
-    //
+    // Blink LED just to verify that the interupts are occuring.
     GpioDataRegs.GPBTOGGLE.bit.GPIO34 = 1;
+    printf("Temp: %u\n", AdcResult.ADCRESULT0);
+    AdcRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
 
-    // TODO: Get temperature
-
-    //
     // Acknowledge this interrupt to receive more interrupts from group 1
-    //
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 }
 
