@@ -36,5 +36,5 @@ indent example.c
 
 #### Linux
 ```bash
-indent -kr example.c
+indent -gnu example.c
 ```

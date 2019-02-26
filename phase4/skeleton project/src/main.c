@@ -6,18 +6,23 @@ DoBootSequence()
     // Adjust console buffering to flush when newline is output.
     D(setvbuf(stdout, NULL, _IOLBF, 0));
 
+    memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (size_t)&RamfuncsLoadSize);
+
     //
     // Initialize System Control:
     // PLL, WatchDog, enable Peripheral Clocks
     // This example function is found in the F2806x_SysCtrl.c file.
     //
     InitSysCtrl();
+
     //
-    // Initalize GPIO:
-    // This example function is found in the F2806x_Gpio.c file and
-    // illustrates how to set the GPIO to it's default state.
+    // Step 2. Initalize GPIO:
+    // Enable XCLOCKOUT to allow monitoring of oscillator 1
     //
-    // InitGpio();  // Skipped for this example
+    EALLOW;
+    GpioCtrlRegs.GPAMUX2.bit.GPIO18 = 3;  // enable XCLOCKOUT through GPIO mux
+    SysCtrlRegs.XCLK.bit.XCLKOUTDIV = 2;  // XCLOCKOUT = SYSCLK
+    EDIS;
 
     // Clear all interrupts and initialize PIE vector table:
     // Disable CPU interrupts
@@ -46,67 +51,40 @@ DoBootSequence()
     //
     InitPieVectTable();
 
-}
-
-void
-ConfigureADC(void)
-{
     InitAdc();
     AdcOffsetSelfCal();
 
-    // Configure ADC to sample the temperature sensor on ADCIN5:
-    // The output of Piccolo temperature sensor can be internally connected to
-    // the ADC through ADCINA5 via the TEMPCONV bit in the ADCCTL1 register.
-    // When this bit is set, any voltage applied to the external ADCIN5 pin
-    // is ignored.
-    EALLOW;
+}
 
-    // Connect internal temp sensor to channel ADCINA5.
-    AdcRegs.ADCCTL1.bit.TEMPCONV    = 1;
+int16 SampleTemperature(void)
+{
+    int16 temp;
 
-    // ADCIN5: Since the temperature sensor is connected to ADCIN5, configure
-    // the ADC to sample channel ADCIN5 as well as the ADC SOC trigger and
-    // ADCINTs preferred. This example uses EPWM1A to trigger the ADC
-    // to start a conversion and trips ADCINT1 at the end of the conversion.
+    //
+    // Force start of conversion on SOC0
+    //
+    AdcRegs.ADCSOCFRC1.all = 0x01;
 
-    AdcRegs.ADCCTL2.bit.ADCNONOVERLAP = 1;  // Enable non-overlap mode
+    //
+    // Wait for end of conversion.
+    //
+    while(AdcRegs.ADCINTFLG.bit.ADCINT1 == 0)
+    {
+        //
+        // Wait for ADCINT1
+        //
+    }
+    AdcRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;        // Clear ADCINT1
 
-    // ADCINT1 trips after AdcResults latch
-    AdcRegs.ADCCTL1.bit.INTPULSEPOS = 1;
+    //
+    // Get temp sensor sample result from SOC0
+    //
+    temp = AdcResult.ADCRESULT0;
 
-    AdcRegs.INTSEL1N2.bit.INT1E     = 1;    // Enabled ADCINT1
-    AdcRegs.INTSEL1N2.bit.INT1CONT  = 0;    // Disable ADCINT1 Continuous mode
-
-    // setup EOC0 to trigger ADCINT1 to fire
-    AdcRegs.INTSEL1N2.bit.INT1SEL   = 0;
-
-    // set SOC0 channel select to ADCINA5
-    // (which is internally connected to the temperature sensor)
-    AdcRegs.ADCSOC0CTL.bit.CHSEL    = 5;
-
-    AdcRegs.ADCSOC0CTL.bit.TRIGSEL  = 5;    // set SOC0 start trigger on EPWM1A
-
-    // set SOC0 S/H Window to 26 ADC Clock Cycles, (25 ACQPS plus 1)
-    AdcRegs.ADCSOC0CTL.bit.ACQPS    = 25;
-    EDIS;
-
-
-    // Enable ADCINT1 in PIE
-    PieCtrlRegs.PIEIER1.bit.INTx1 = 1; // Enable INT 1.1 in the PIE
-    IER |= M_INT1;                     // Enable CPU Interrupt 1
-    EINT;                              // Enable Global interrupt INTM
-    ERTM;                              // Enable Global realtime interrupt DBGM
-
-    // Assumes ePWM1 clock is already enabled in InitSysCtrl();
-    EPwm1Regs.ETSEL.bit.SOCAEN  = 1;        // Enable SOC on A group
-
-    // Select SOC from from CPMA on upcount
-    EPwm1Regs.ETSEL.bit.SOCASEL = 4;
-
-    EPwm1Regs.ETPS.bit.SOCAPRD  = 1;        // Generate pulse on 1st event
-    EPwm1Regs.CMPA.half.CMPA    = 0x0080;   // Set compare A value
-    EPwm1Regs.TBPRD             = 0xFFFF;   // Set period for ePWM1
-    EPwm1Regs.TBCTL.bit.CTRMODE = 0;        // count up and start
+    //
+    // Convert the raw temperature sensor measurement into temperature
+    //
+    return(GetTemperatureC(temp));
 }
 
 void
@@ -121,11 +99,33 @@ main(void)
     PieVectTable.TINT0 = &cpu_timer0_isr;
     EDIS;      // This is needed to disable write to EALLOW protected registers
 
+
+    EALLOW;
+    AdcRegs.ADCCTL2.bit.ADCNONOVERLAP = 1;  // Enable non-overlap mode
+
     //
-    // Step 4. Initialize the Device Peripheral. This function can be
-    //         found in F2806x_CpuTimers.c
+    // Connect channel A5 internally to the temperature sensor
     //
-    InitCpuTimers();   // For this example, only initialize the Cpu Timers
+    AdcRegs.ADCCTL1.bit.TEMPCONV  = 1;
+
+    AdcRegs.ADCSOC0CTL.bit.CHSEL  = 5;  // Set SOC0 channel select to ADCINA5
+
+    //
+    // Set SOC0 acquisition period to 26 ADCCLK
+    //
+    AdcRegs.ADCSOC0CTL.bit.ACQPS  = 25;
+
+    AdcRegs.INTSEL1N2.bit.INT1SEL = 0;  // Connect ADCINT1 to EOC0
+    AdcRegs.INTSEL1N2.bit.INT1E   = 1;  // Enable ADCINT1
+
+    //
+    // Set the flash OTP wait-states to minimum. This is important
+    // for the performance of the temperature conversion function.
+    //
+    FlashRegs.FOTPWAIT.bit.OTPWAIT = 1;
+    EDIS;
+
+    InitCpuTimers();
 
     //
     // Configure CPU-Timer 0 to interrupt every 500 milliseconds:
@@ -149,12 +149,12 @@ main(void)
     // Step 5. User specific code, enable interrupts:
     //
 
-    //
-    // Configure GPIO34 as a GPIO output pin
-    //
+    // Configure GPIO34 and GPIO39 to blink LEDs
     EALLOW;
-    GpioCtrlRegs.GPBMUX1.bit.GPIO34 = 0;
     GpioCtrlRegs.GPBDIR.bit.GPIO34 = 1;
+    GpioCtrlRegs.GPBDIR.bit.GPIO39 = 1;
+    GpioDataRegs.GPBDAT.bit.GPIO34 = 1;
+    GpioDataRegs.GPBDAT.bit.GPIO39 = 1;
     EDIS;
 
     //
@@ -186,12 +186,17 @@ cpu_timer0_isr(void)
     CpuTimer0.InterruptCount++;
 
     // Blink LED just to verify that the interupts are occuring.
+    EALLOW;
     GpioDataRegs.GPBTOGGLE.bit.GPIO34 = 1;
-    D(printf("Temp: %u\n", AdcResult.ADCRESULT0));
+    GpioDataRegs.GPBTOGGLE.bit.GPIO39 = 1;
+    EDIS;
+    int16 temp = SampleTemperature();
+    D(printf("Temp: %d\n", AdcResult.ADCRESULT0));
     AdcRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
 
     // Acknowledge this interrupt to receive more interrupts from group 1
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
+
 }
 
 //

@@ -17,9 +17,8 @@
 #define D(x)
 #endif
 
-
 void DoBootSequence(void);
-void ConfigureADC(void);
+int16 SampleTemperature(void);
 __interrupt void cpu_timer0_isr(void);
 
 #endif  // MAIN_H
