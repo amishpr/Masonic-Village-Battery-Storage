@@ -1,6 +1,6 @@
-#if !defined(TRIVIALTEST_H)
-#define TRIVIALTEST_H
+#if !defined(TEMPERATURESENSOR_H)
+#define TEMPERATURESENSOR_H
 
-void test_UnitTests_Are_Working(void);
+void test_Temperature_Sensor(void);
 
-#endif // TRIVIALTEST_H
+#endif // TEMPERATURESENSOR_H
