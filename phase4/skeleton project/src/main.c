@@ -90,7 +90,33 @@ int16 SampleTemperature(void)
 // This calculates Fast Fourier Transform
 int16 CalculateFastFourierTransform(void)
 {
+    fft_flag = FFT_FLAG;
 
+    scale_flag = SCALE_FLAG;
+
+    data = <1024-point Complex input>;
+
+    // Bit-Reverse 1024-point data, Store into data_br, data_br aligned to
+    // 12-least significant binary zeros
+
+    hwafft_br(data, data_br, DATA_LEN_1024);
+
+    // Bit-reverse input data, destination buffer aligned
+
+    data = data_br;
+
+    // Compute 1024-point FFT with scaling enabled
+
+    out_sel = hwafft_1024pts(data, scratch, fft_flag, scale_flag);
+
+    if (out_sel == OUT_SEL_DATA) {
+
+        result = data;
+
+    } else {
+
+        result = scratch;
+    }
 }
 
 void
