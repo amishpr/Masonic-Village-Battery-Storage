@@ -87,6 +87,11 @@ int16 SampleTemperature(void)
     return(GetTemperatureC(temp));
 }
 
+int16 CalculateFastFourierTransform(void)
+{
+
+}
+
 void
 main(void)
 {
