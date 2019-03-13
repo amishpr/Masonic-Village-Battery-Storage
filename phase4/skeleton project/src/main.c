@@ -87,6 +87,7 @@ int16 SampleTemperature(void)
     return(GetTemperatureC(temp));
 }
 
+// This calculates Fast Fourier Transform
 int16 CalculateFastFourierTransform(void)
 {
 
