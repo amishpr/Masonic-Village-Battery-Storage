@@ -117,6 +117,8 @@ int16 CalculateFastFourierTransform(void)
 
         result = scratch;
     }
+
+    return result;
 }
 
 void
