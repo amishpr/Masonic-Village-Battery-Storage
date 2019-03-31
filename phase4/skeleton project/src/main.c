@@ -6,8 +6,6 @@ DoBootSequence()
     // Adjust console buffering to flush when newline is output.
     D(setvbuf(stdout, NULL, _IOLBF, 0));
 
-    memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (size_t)&RamfuncsLoadSize);
-
     //
     // Initialize System Control:
     // PLL, WatchDog, enable Peripheral Clocks
@@ -51,44 +49,53 @@ DoBootSequence()
     //
     InitPieVectTable();
 
-    InitAdc();
-    AdcOffsetSelfCal();
-
 }
 
-int16 SampleTemperature(void)
+//
+// HRPWM1_Config -
+//
+void
+HRPWM1_Config(Uint16 period)
 {
-    int16 temp;
+    //
+    // ePWM1 register configuration with HRPWM
+    // ePWM1A toggle low/high with MEP control on Rising edge
+    //
+    EPwm1Regs.TBCTL.bit.PRDLD = TB_IMMEDIATE;    // set Immediate load
+    EPwm1Regs.TBPRD = period-1;                  // PWM frequency = 1 / period
+    EPwm1Regs.CMPA.half.CMPA = period / 2;       // set duty 50% initially
+    EPwm1Regs.CMPA.half.CMPAHR = (1 << 8);       // initialize HRPWM extension
+    EPwm1Regs.CMPB = period / 2;                 // set duty 50% initially
+    EPwm1Regs.TBPHS.all = 0;
+    EPwm1Regs.TBCTR = 0;
 
-    //
-    // Force start of conversion on SOC0
-    //
-    AdcRegs.ADCSOCFRC1.all = 0x01;
+    EPwm1Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;
+    EPwm1Regs.TBCTL.bit.PHSEN = TB_DISABLE;      // EPwm1 is the Master
+    EPwm1Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_DISABLE;
+    EPwm1Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;
+    EPwm1Regs.TBCTL.bit.CLKDIV = TB_DIV1;
 
-    //
-    // Wait for end of conversion.
-    //
-    while(AdcRegs.ADCINTFLG.bit.ADCINT1 == 0)
-    {
-        //
-        // Wait for ADCINT1
-        //
-    }
-    AdcRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;        // Clear ADCINT1
+    EPwm1Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;
+    EPwm1Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;
+    EPwm1Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;
+    EPwm1Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;
 
-    //
-    // Get temp sensor sample result from SOC0
-    //
-    temp = AdcResult.ADCRESULT0;
+    EPwm1Regs.AQCTLA.bit.ZRO = AQ_CLEAR;        // PWM toggle low/high
+    EPwm1Regs.AQCTLA.bit.CAU = AQ_SET;
+    EPwm1Regs.AQCTLB.bit.ZRO = AQ_CLEAR;
+    EPwm1Regs.AQCTLB.bit.CBU = AQ_SET;
 
-    //
-    // Convert the raw temperature sensor measurement into temperature
-    //
-    return(GetTemperatureC(temp));
+    EALLOW;
+    EPwm1Regs.HRCNFG.all = 0x0;
+    EPwm1Regs.HRCNFG.bit.EDGMODE = HR_REP;      // MEP control on Rising edge
+    EPwm1Regs.HRCNFG.bit.CTLMODE = HR_CMP;
+    EPwm1Regs.HRCNFG.bit.HRLOAD  = HR_CTR_ZERO;
+    EDIS;
 }
 
 // This calculates Fast Fourier Transform
-int16 CalculateFastFourierTransform(void)
+int16
+CalculateFastFourierTransform(void)
 {
     fft_flag = FFT_FLAG;
 
@@ -132,32 +139,6 @@ main(void)
     EALLOW;    // This is needed to write to EALLOW protected registers
     PieVectTable.TINT0 = &cpu_timer0_isr;
     EDIS;      // This is needed to disable write to EALLOW protected registers
-
-
-    EALLOW;
-    AdcRegs.ADCCTL2.bit.ADCNONOVERLAP = 1;  // Enable non-overlap mode
-
-    //
-    // Connect channel A5 internally to the temperature sensor
-    //
-    AdcRegs.ADCCTL1.bit.TEMPCONV  = 1;
-
-    AdcRegs.ADCSOC0CTL.bit.CHSEL  = 5;  // Set SOC0 channel select to ADCINA5
-
-    //
-    // Set SOC0 acquisition period to 26 ADCCLK
-    //
-    AdcRegs.ADCSOC0CTL.bit.ACQPS  = 25;
-
-    AdcRegs.INTSEL1N2.bit.INT1SEL = 0;  // Connect ADCINT1 to EOC0
-    AdcRegs.INTSEL1N2.bit.INT1E   = 1;  // Enable ADCINT1
-
-    //
-    // Set the flash OTP wait-states to minimum. This is important
-    // for the performance of the temperature conversion function.
-    //
-    FlashRegs.FOTPWAIT.bit.OTPWAIT = 1;
-    EDIS;
 
     InitCpuTimers();
 
@@ -224,9 +205,8 @@ cpu_timer0_isr(void)
     GpioDataRegs.GPBTOGGLE.bit.GPIO34 = 1;
     GpioDataRegs.GPBTOGGLE.bit.GPIO39 = 1;
     EDIS;
-    int16 temp = SampleTemperature();
-    D(printf("Temp: %d\n", AdcResult.ADCRESULT0));
-    AdcRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
+
+
 
     // Acknowledge this interrupt to receive more interrupts from group 1
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;

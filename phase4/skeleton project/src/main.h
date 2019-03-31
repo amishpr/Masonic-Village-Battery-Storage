@@ -4,6 +4,7 @@
 #include "F2806x_Cla_typedefs.h"// F2806x CLA Type definitions
 #include "F2806x_Device.h"      // F2806x Headerfile Include File
 #include "F2806x_Examples.h"   	// F2806x Examples Include File
+#include "F2806x_EPwm_defines.h"
 #include <stdio.h>
 
 
@@ -18,7 +19,8 @@
 #endif
 
 void DoBootSequence(void);
-int16 SampleTemperature(void);
+void HRPWM1_Config(Uint16);
+int16 CalculateFastFourierTransform(void);
 __interrupt void cpu_timer0_isr(void);
 
 #endif  // MAIN_H
