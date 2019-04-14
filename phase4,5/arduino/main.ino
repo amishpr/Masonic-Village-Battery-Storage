@@ -1,4 +1,11 @@
 #include <LiquidCrystal.h>
+#include <FanController.h>
+
+#define SENSOR_PIN 2
+#define SENSOR_THRESHOLD 1000
+
+// PWM pin (4th on 4 pin fans)
+#define PWM_PIN 5
 
 /*
  * The circuit:
@@ -14,9 +21,17 @@
  * 10K resistor:
  * ends to +5V and ground
  */
+
+// Initialize library
+FanController fan(SENSOR_PIN, SENSOR_THRESHOLD, PWM_PIN);
  
 // ANALOG IN - A0
 int tempPin = 0;
+
+int fanSpeedIn = 5;
+
+// ANALOG OUT - 2
+int fanPin = 2;
 
 //                BS  E  D4 D5  D6 D7
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
@@ -24,11 +39,16 @@ LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 void setup()
 {
   lcd.begin(16, 2);
+  
+  // Start up the library
+  fan.begin();
 }
 void loop()
 {
   // Get temp from temperature sensor
   int tempAnalog = analogRead(tempPin);
+
+  int fanSpeed = analogRead(fanSpeedIn);
 
   // Initial calculation of temp in Kelvin
   double tempK = log ( 10000.0 * ( ( 1024.0 / tempAnalog - 1 ) ) );
@@ -46,21 +66,40 @@ void loop()
   lcd.setCursor(0, 0);
 
   // Display Temperature in C
-  //  lcd.print("Temp ");
+  // lcd.print("Temp:        C  ");
   
   // Display Temperature in F
-  lcd.print("Temp ");
+  lcd.print("Temp:        F  ");
 
   // Sets LCD to print on first line, offset by 6
   lcd.setCursor(6, 0);
   
   // Display Temperature in C
   // lcd.print(tempC);
-  // lcd.print("  C");
 
   // Display Temperature in F
   lcd.print(tempF);
-  lcd.print("  F");
-  
+
+  // Set LCD to print on second line
+  lcd.setCursor(0, 1);  
+
+  // Display Fan Speed message
+  lcd.print("Fan:         RPM");
+//  lcd.print(fanSpeed);
+
+   lcd.setCursor(6, 1);
+   unsigned int rpms = fan.getSpeed(); // Send the command to get RPM
+   lcd.print(rpms);
+   
+  if (tempF > 85) {
+//    lcd.print("HIGH");
+//    analogWrite(fanPin, 255);
+//    digitalWrite(fanPin, HIGH);
+  } else {
+//    lcd.print("LOW ");
+//    analogWrite(fanPin, 0);
+//    digitalWrite(fanPin, LOW);
+  }
+ 
   delay(500);
 }
