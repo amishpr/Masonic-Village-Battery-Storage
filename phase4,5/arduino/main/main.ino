@@ -4,7 +4,7 @@
 #define SENSOR_PIN 2
 #define SENSOR_THRESHOLD 1000
 
-// PWM pin (4th on 4 pin fans)
+// PWM pin
 #define PWM_PIN 5
 
 /*
@@ -38,10 +38,14 @@ LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
 void setup()
 {
+  // Initializing LCD to be 16x2
   lcd.begin(16, 2);
   
   // Start up the library
   fan.begin();
+
+  // Setting PWM pin to output
+  pinMode(PWM_PIN, OUTPUT);
 }
 void loop()
 {
@@ -94,11 +98,11 @@ void loop()
   if (tempF > 85) {
 //    lcd.print("HIGH");
 //    analogWrite(fanPin, 255);
-//    digitalWrite(fanPin, HIGH);
+    digitalWrite(PWM_PIN, HIGH);
   } else {
 //    lcd.print("LOW ");
 //    analogWrite(fanPin, 0);
-//    digitalWrite(fanPin, LOW);
+    digitalWrite(PWM_PIN, LOW);
   }
  
   delay(500);
