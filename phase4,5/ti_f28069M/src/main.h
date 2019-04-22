@@ -7,6 +7,28 @@
 #include "F2806x_EPwm_defines.h"
 #include <stdio.h>
 
+//
+// Included Files
+//
+#include <stdbool.h>
+#include "DSP28x_Project.h"     // Device Headerfile and Examples Include File
+#include "math.h"
+
+//
+// Defines that configure the period for each timer
+//
+#define BUILD_1				1		// Example project implementation
+#define BUILD_2				2		// Project found on forum
+#define BUILD_3				3		// Project implementation 1
+
+#define EPWM1_INV_TBPRD		6250  // 60Hz SPWM with 90MHz sysclock, div = 1
+
+#define EPWM2_FORUM_TBPRD	5000 // 5kHz PWM Period register
+
+
+#define PI					3.14159265358979323846
+
+#define true				1
 
 // Macro to label code as debug code.
 // Example: D(prinf("Line Reached!"));
