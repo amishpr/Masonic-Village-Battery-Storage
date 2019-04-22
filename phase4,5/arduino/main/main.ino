@@ -28,6 +28,12 @@ FanController fan(SENSOR_PIN, SENSOR_THRESHOLD, PWM_PIN);
 // ANALOG IN - A0
 int tempPin = 0;
 
+// ANALOG IN - A3
+int voltagePin = 3; 
+
+// ANALOG IN - A4
+int currentPin = 4;
+
 int fanSpeedIn = 5;
 
 // ANALOG OUT - 2
@@ -54,6 +60,18 @@ void loop()
 
   int fanSpeed = analogRead(fanSpeedIn);
 
+  // Get current from currentPin
+  double currentRead = analogRead(currentPin);
+
+  // Get voltage from voltagePin
+  double voltageRead = analogRead(voltagePin);
+
+  // (x / 1023) * 5 --> (analog/1023) = (voltage/5v)
+  double voltage = (voltageRead / 1023) * 5;
+
+  double voltageCurrent = (currentRead / 1023) * 5;
+  double current = (voltageCurrent * 1000) / 470;
+
   // Initial calculation of temp in Kelvin
   double tempK = log ( 10000.0 * ( ( 1024.0 / tempAnalog - 1 ) ) );
 
@@ -73,7 +91,8 @@ void loop()
   // lcd.print("Temp:        C  ");
   
   // Display Temperature in F
-  lcd.print("Temp:        F  ");
+  //  lcd.print("Temp:        F  ");
+      lcd.print("Volt:          V");
 
   // Sets LCD to print on first line, offset by 6
   lcd.setCursor(6, 0);
@@ -82,18 +101,21 @@ void loop()
   // lcd.print(tempC);
 
   // Display Temperature in F
-  lcd.print(tempF);
+//  lcd.print(tempF);
+    lcd.print(voltage);
 
   // Set LCD to print on second line
   lcd.setCursor(0, 1);  
 
   // Display Fan Speed message
-  lcd.print("Fan:         RPM");
+//  lcd.print("Fan:         RPM");
+    lcd.print("Cur:           A");
 //  lcd.print(fanSpeed);
 
    lcd.setCursor(6, 1);
-   unsigned int rpms = fan.getSpeed(); // Send the command to get RPM
-   lcd.print(rpms);
+//   unsigned int rpms = fan.getSpeed(); // Send the command to get RPM
+//   lcd.print(rpms);
+     lcd.print(current);
    
   if (tempF > 85) {
 //    lcd.print("HIGH");
