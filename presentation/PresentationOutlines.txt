@@ -1,0 +1,37 @@
+﻿
+Outline:
+
+• Title page
+    o (*) Title of your project
+    o (*) Group name
+• Table of contents / Outline
+• Opening
+    o Motivation, Background, Problems of existing products
+    o Purpose/Goals of your product
+    o etc.
+• Body
+    o Structure of your program/system
+    o Features of your program
+    o Demo (video clip or screenshots) to give a better idea about your product to audiance
+    o How you developed your programs
+    o Problems that you experienced, and your approach to resolve resolve them
+    o etc.
+    o You have freedom in this part.
+      Be creative!
+• Closing
+    o Conclusion 
+        ▪ (*) Summary of your product
+        ▪ Minimum and Recommended System, etc
+        ▪ (*) Future works
+    o Acknowledgement
+        ▪ (*) Team members and each members' roles
+        ▪ (*) Tools or frameworks used in your project and product
+        ▪ etc.
+
+(*) must be included.
+
+30 minute per team
+  - 20-25 minute presentation
+    1-2 minutes per slide
+  - 5-10 minutes for Q&A, and switching teams
+
