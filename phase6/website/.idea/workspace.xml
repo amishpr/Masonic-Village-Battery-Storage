@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4ed782cc-11ea-4183-80ab-3ab6a200242e" name="Default Changelist" comment="Updated workspace">
-      <change afterPath="$PROJECT_DIR$/images/phase1/DomainModel.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase1/GUI - Input Mode 2x16.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase1/GUI - Output Mode 2x16.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase1/Project Glossary and Requirements-1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase1/Project Glossary and Requirements-2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase1/Regulate Current Use Case.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase1/Temperature Threshold Use Case.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase1/Use Case Diagram.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase2/Regulate Current Robustness Diagram.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase2/Regulate Current Sequence Diagram.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase2/Static Class Diagram.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase2/Technical Architecture.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase2/Temperature Threshold Robustness Diagram.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase2/Temperature Threshold Sequence Diagram-1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase3/Detailed Schedule Table.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/phase3/Gantt Chart.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-    </list>
+    <list default="true" id="4ed782cc-11ea-4183-80ab-3ab6a200242e" name="Default Changelist" comment="Updated workspace" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -86,11 +66,21 @@
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
-    <navigator proportions="" version="1">
+    <navigator currentView="Scope" currentSubView="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope" proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="Scope">
+        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
+          <expand>
+            <path>
+              <item name="website" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/Masonic-Village-Battery-Storage/phase6/website" type="442cc68d:ScopeViewTreeModel$RootNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -203,7 +193,7 @@
       <workItem from="1555955609204" duration="496000" />
       <workItem from="1556077144702" duration="201000" />
       <workItem from="1556079062162" duration="91000" />
-      <workItem from="1556080110971" duration="1556000" />
+      <workItem from="1556080110971" duration="2020000" />
     </task>
     <task id="LOCAL-00001" summary="Updated tagline">
       <created>1553039388214</created>
@@ -377,7 +367,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22968000" />
+    <option name="totallyTimeSpent" value="23432000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -390,7 +380,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="127" y="23" width="1153" height="777" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.34452298" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
