@@ -39,6 +39,9 @@ int fanSpeedIn = 5;
 // ANALOG OUT - 2
 int fanPin = 2;
 
+// Switch between first screen (temp and fan) and second screen (current and voltage)
+boolean firstScreen = false;
+
 //                BS  E  D4 D5  D6 D7
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
@@ -55,6 +58,9 @@ void setup()
 }
 void loop()
 {
+  // Switch screen
+  firstScreen = !firstScreen;
+  
   // Get temp from temperature sensor
   int tempAnalog = analogRead(tempPin);
 
@@ -66,10 +72,14 @@ void loop()
   // Get voltage from voltagePin
   double voltageRead = analogRead(voltagePin);
 
+  // Calculate voltage
   // (x / 1023) * 5 --> (analog/1023) = (voltage/5v)
   double voltage = (voltageRead / 1023) * 5;
 
+  // Calculate voltage for the current
   double voltageCurrent = (currentRead / 1023) * 5;
+
+  // Calculate current
   double current = (voltageCurrent * 1000) / 470;
 
   // Initial calculation of temp in Kelvin
@@ -87,36 +97,59 @@ void loop()
   // Set LCD to print on first line
   lcd.setCursor(0, 0);
 
-  // Display Temperature in C
-  // lcd.print("Temp:        C  ");
+   if (firstScreen) {
+      // Display Temperature in C
+      // lcd.print("Temp:        C  ");
   
-  // Display Temperature in F
-  //  lcd.print("Temp:        F  ");
-      lcd.print("Volt:          V");
+      // Display Temperature in F
+         lcd.print("Temp:        F  ");
+      
+    } else {
+       // Display Voltage         
+         lcd.print("Volt:        V  ");
+    }
 
   // Sets LCD to print on first line, offset by 6
   lcd.setCursor(6, 0);
+
+  if (firstScreen) {
+     // Display Temperature in C
+     // lcd.print(tempC);
+
+     // Display Temperature in F
+        lcd.print(tempF);
+    } else {
+     // Display Voltage
+        lcd.print(voltage);
+    }
   
-  // Display Temperature in C
-  // lcd.print(tempC);
-
-  // Display Temperature in F
-//  lcd.print(tempF);
-    lcd.print(voltage);
-
   // Set LCD to print on second line
   lcd.setCursor(0, 1);  
 
-  // Display Fan Speed message
-//  lcd.print("Fan:         RPM");
-    lcd.print("Cur:           A");
+   if (firstScreen) {
+      // Display Fan Speed message
+         lcd.print("Fan:         RPM");
+    } else {
+      // Display Current in amps
+         lcd.print("Cur:         A  ");
+    }
+
 //  lcd.print(fanSpeed);
 
    lcd.setCursor(6, 1);
-//   unsigned int rpms = fan.getSpeed(); // Send the command to get RPM
-//   lcd.print(rpms);
-     lcd.print(current);
-   
+
+   if (firstScreen) {
+     // Get RPM using FanController library
+        unsigned int rpms = fan.getSpeed(); // Send the command to get RPM
+     
+     // Display fan speed in RPM        
+        lcd.print(rpms);
+    } else {
+     // Display current
+        lcd.print(current);
+    }
+
+ // Turn on fan if tempF is greater than 85
   if (tempF > 85) {
 //    lcd.print("HIGH");
 //    analogWrite(fanPin, 255);
@@ -127,5 +160,5 @@ void loop()
     digitalWrite(PWM_PIN, LOW);
   }
  
-  delay(500);
+  delay(5000);
 }
