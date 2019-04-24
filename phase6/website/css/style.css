@@ -607,3 +607,7 @@ header {
         margin-top: 2rem;
     }
 }
+
+.doc-img {
+    width: 50%;
+}
