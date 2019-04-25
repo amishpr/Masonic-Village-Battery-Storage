@@ -42,6 +42,9 @@ int fanPin = 2;
 // Switch between first screen (temp and fan) and second screen (current and voltage)
 boolean firstScreen = false;
 
+// Count the number of loops the program goes through
+int delayCount = 0;
+
 //                BS  E  D4 D5  D6 D7
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
@@ -58,8 +61,17 @@ void setup()
 }
 void loop()
 {
-  // Switch screen
-  firstScreen = !firstScreen;
+  
+  if (delayCount >= 10) {
+      // Switch screen
+      firstScreen = !firstScreen;
+
+      // Reset delayCount
+      delayCount = 0;
+  } else {
+      // Increase delayCount
+      delayCount++;
+  }
   
   // Get temp from temperature sensor
   int tempAnalog = analogRead(tempPin);
@@ -160,5 +172,5 @@ void loop()
     digitalWrite(PWM_PIN, LOW);
   }
  
-  delay(5000);
+  delay(500);
 }
