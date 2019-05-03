@@ -29,10 +29,10 @@ FanController fan(SENSOR_PIN, SENSOR_THRESHOLD, PWM_PIN);
 int tempPin = 0;
 
 // ANALOG IN - A3
-int voltagePin = 3; 
+int voltagePin = A3; 
 
 // ANALOG IN - A4
-int currentPin = 4;
+int currentPin = A4;
 
 int fanSpeedIn = 5;
 
@@ -58,6 +58,9 @@ void setup()
 
   // Setting PWM pin to output
   pinMode(PWM_PIN, OUTPUT);
+
+  // Initialize Serial Monitor
+  Serial.begin(9600);
 }
 void loop()
 {
@@ -86,13 +89,13 @@ void loop()
 
   // Calculate voltage
   // (x / 1023) * 5 --> (analog/1023) = (voltage/5v)
-  double voltage = (voltageRead / 1023) * 5;
+  double voltage = (voltageRead / 1023) * 5 * 101;
 
   // Calculate voltage for the current
   double voltageCurrent = (currentRead / 1023) * 5;
 
   // Calculate current
-  double current = (voltageCurrent * 1000) / 470;
+  double current = (voltageCurrent * 1000) / 2000;
 
   // Initial calculation of temp in Kelvin
   double tempK = log ( 10000.0 * ( ( 1024.0 / tempAnalog - 1 ) ) );
@@ -157,6 +160,7 @@ void loop()
      // Display fan speed in RPM        
         lcd.print(rpms);
     } else {
+      
      // Display current
         lcd.print(current);
     }
@@ -171,6 +175,8 @@ void loop()
 //    analogWrite(fanPin, 0);
     digitalWrite(PWM_PIN, LOW);
   }
- 
-  delay(500);
+
+//  Serial.println(currentRead);
+   
+  delay(1000);
 }
