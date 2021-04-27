@@ -2,7 +2,7 @@
 
 Website:
 
-https://k-chromatic.github.io/Masonic-Village-Battery-Storage/
+https://amishpr.github.io/Masonic-Village-Battery-Storage/
 
 ## Team Name
 
